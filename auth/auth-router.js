@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const Users = require('../users/users-model.js');
 
 // for endpoints beginning with /api/auth
+
 router.post('/register', (req, res) => {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10); // 2 ^ n
@@ -25,6 +26,9 @@ router.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        //save a session for client and send back a cookie
+        req.session.user = user;  //saves entire user
+
         res.status(200).json({
           message: `Welcome ${user.username}!`,
         });
