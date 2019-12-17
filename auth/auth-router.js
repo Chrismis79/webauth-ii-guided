@@ -41,4 +41,18 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.get('/logout', (req, res) => {
+  if(req.session){
+    req.session.destroy(err => {
+      if(err){
+        res.status(500).json({message: "Problem deleting session"})
+      }else {
+        res.status(200).json({message: "logged out"})
+      }
+    })
+    
+  }
+})
+
+
 module.exports = router;

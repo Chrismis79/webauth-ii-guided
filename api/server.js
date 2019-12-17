@@ -2,9 +2,11 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const sessions = require('express-session');
-
+const KnexSessionStore
+= require('connect-session-knex')(sessions);
 const authRouter = require('../auth/auth-router.js');
 const usersRouter = require('../users/users-router.js');
+const knex = require('../database/dbConfig');
 
 const server = express();
 
@@ -15,6 +17,16 @@ const sessionConfiguration = {
 //secrets used for encryption(must be an environemt variable)
   saveUninitialized: true, //has implications with complying with laws that requite permission to save cookies
   resave: false, 
+
+  //how to store sessions
+  store: new KnexSessionStore({ //new KW is a must!
+    knex, //imported from dbConfig.js
+    tablename: 'sessions',
+    createtable: true, //if not there, create a table
+    sidfieldname: 'sid',
+    clearInterval: 1000 * 60 * 10,  //defaults to 6000
+  }),
+
   //cookie options
   cookie: {
     maxAge: 1000 * 60 * 10, //10mins in milliseconds
